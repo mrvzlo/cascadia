@@ -19,6 +19,15 @@ export function setupClickHandling(app: Application, world: GameWorld) {
   app.stage.on("pointerdown", (event) => handleClick(world, event.global));
   Object.assign(window, { baba: () => world });
   redraw(world);
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "q" || e.key === "e") {
+      if (world.movePart !== MovePart.PlaceTile) return;
+      const tile = world.lastPickup!.tile;
+      tile.rotation = ((tile.rotation ?? 0) + (e.key === "q" ? 1 : 5)) % 6;
+      redraw(world);
+    }
+  });
 }
 
 function handleClick(world: GameWorld, pos: Point) {

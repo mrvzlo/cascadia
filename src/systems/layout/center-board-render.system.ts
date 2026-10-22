@@ -4,6 +4,7 @@ import { HEX_SIZE, PLACED_ANIMAL_R, PLAYER_BOARD_TOP } from "../../consts/sizes"
 import { drawCenterHex } from "./hex-render.system";
 import { boardCoordsToReal } from "./player-board-layout.system";
 import { AnimalColors } from "../../consts/tile-colors";
+import { MovePart } from "../../components/move-part";
 
 export const RenderCenterBoard = (container: Container, world: GameWorld) => {
   const g = new Graphics();
@@ -13,7 +14,8 @@ export const RenderCenterBoard = (container: Container, world: GameWorld) => {
   world.center.tileStock.forEach((tile, i) => {
     const real = boardCoordsToReal(new Point((i - 1.5) * 2.4, 1));
     real.x += center.x;
-    drawCenterHex(g, tile, real);
+    const unselected = world.movePart === MovePart.PlaceTile && world.lastPickup?.tile !== tile;
+    drawCenterHex(g, tile, real, unselected);
   });
 
   world.center.animalStock.forEach((animal, i) => {

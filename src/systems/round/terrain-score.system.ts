@@ -33,9 +33,8 @@ function getMaxRegionSize(board: PlayerBoard, color: number) {
           !neighbor ||
           !hasBiomeOnEdge(current, color, getSharedEdge(direction)) ||
           !hasBiomeOnEdge(neighbor, color, (getSharedEdge(direction) + 3) % 6)
-        ) {
+        )
           continue;
-        }
 
         visited.add(neighborKey);
         queue.push(neighbor);
@@ -56,19 +55,19 @@ function hasBiomeOnEdge(tile: PlacedTile, color: number, edge: number) {
   if (tile.bioms.length === 1) return tile.bioms[0] === color;
   if (tile.bioms.length < 2) return false;
 
-  const rotation = (((tile.rotation ?? 0) % 6) + 6) % 6;
+  const rotation = (tile.rotation ?? 0) % 6;
   const unrotatedEdge = (edge - rotation + 6) % 6;
   const biomeIndex = unrotatedEdge < 3 ? 0 : 1;
   return tile.bioms[biomeIndex] === color;
 }
 
 function getSharedEdge(direction: Point) {
-  if (direction.x === -2) return 4;
+  if (direction.x === 1 && direction.y === 1) return 0;
   if (direction.x === 2) return 1;
-  if (direction.x === -1 && direction.y === -1) return 5;
-  if (direction.x === -1 && direction.y === 1) return 3;
-  if (direction.x === 1 && direction.y === -1) return 0;
-  if (direction.x === 1 && direction.y === 1) return 2;
+  if (direction.x === 1 && direction.y === -1) return 2;
+  if (direction.x === -1 && direction.y === -1) return 3;
+  if (direction.x === -2) return 4;
+  if (direction.x === -1 && direction.y === 1) return 5;
   throw new Error(`Unsupported hex neighbor offset (${direction.x}, ${direction.y})`);
 }
 
