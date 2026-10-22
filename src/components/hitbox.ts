@@ -1,13 +1,13 @@
-import { Point } from "pixi.js";
+import { Graphics, PointData } from "pixi.js";
+import { PlacedTile } from "./placed-tile";
+import { ContainerType } from "./container.type";
 
-export default interface Hitbox {
-  x: number;
-  y: number;
+export default interface Hitbox extends PointData {
   r: number;
+  tile?: PlacedTile;
+  isHex: boolean;
+  container: ContainerType;
 
-  type: "placedTile" | "stockTile" | "availableTile" | "stockAnimal";
-
-  centerIndex?: number;
-
-  boardCoords?: Point;
+  onClick: (() => Promise<void>) | ((me: Hitbox) => void);
+  onRender: (me: Hitbox, g: Graphics) => void;
 }

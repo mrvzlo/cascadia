@@ -6,4 +6,7 @@ export interface CenterBoard {
   tileStock: Tile[];
   tileShuffled: Tile[];
   discarded: number[];
+
+  tileFading?: number;
+  animalFading?: number;
 }

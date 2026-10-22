@@ -4,7 +4,7 @@ export default class Map2D<T> {
   private inner: Map<number, Map<number, T>> = new Map();
 
   get(point: Point) {
-    return this.inner.get(point.x)?.get(point.y);
+    return this.inner.get(point.x)?.get(point.y)!;
   }
 
   set(point: Point, value: T) {

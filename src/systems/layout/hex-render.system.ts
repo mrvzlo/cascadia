@@ -7,7 +7,7 @@ import { PlacedTile } from "../../components/placed-tile";
 const sins = [0, Math.sin(Math.PI / 3), Math.sin((2 * Math.PI) / 3), 0, Math.sin((4 * Math.PI) / 3), Math.sin((5 * Math.PI) / 3)];
 const coss = [1, Math.cos(Math.PI / 3), Math.cos((2 * Math.PI) / 3), -1, Math.cos((4 * Math.PI) / 3), Math.cos((5 * Math.PI) / 3)];
 
-export function drawCenterHex(g: Graphics, tile: Tile, offset: Point, dim = false) {
+export function drawCenterHex(g: Graphics, tile: Tile, offset: PointData, dim = false) {
   const alpha = dim ? "2" : "";
   const colors = tile.bioms.map((x) => TerrainColors[x] + alpha);
   drawHex(g, colors, tile.rotation ?? 0, offset, HEX_SIZE);
@@ -15,7 +15,7 @@ export function drawCenterHex(g: Graphics, tile: Tile, offset: Point, dim = fals
   drawAnimals(g, offset, animalColors);
 }
 
-export function drawPlayerHex(g: Graphics, tile: PlacedTile, offset: Point) {
+export function drawPlayerHex(g: Graphics, tile: PlacedTile, offset: PointData) {
   const tileColors = tile.bioms.map((x) => TerrainColors[x]);
   drawHex(g, tileColors, tile.rotation ?? 0, offset, HEX_SIZE);
   const isOccupied = tile.occupied !== undefined;
@@ -23,17 +23,15 @@ export function drawPlayerHex(g: Graphics, tile: PlacedTile, offset: Point) {
   drawAnimals(g, offset, animalColors, isOccupied);
 }
 
-export function drawEmptyHex(g: Graphics, offset: Point, faded: boolean) {
-  drawHex(g, [faded ? "#ddd1" : "#ddd7"], 0, offset, HEX_SIZE * 0.8, false);
+export function drawEmptyHex(g: Graphics, offset: PointData, faded: boolean) {
+  drawHex(g, [faded ? "#aaa1" : "#aaa4"], 0, offset, HEX_SIZE * 0.7, false);
 }
 
-function drawHex(g: Graphics, colors: string[], rotation: number, offset: Point, size: number, stroke = true) {
-  const vertices = Array.from({ length: 6 }, (_, i): PointData => {
-    return {
-      x: offset.x + size * sins[(i + rotation) % 6],
-      y: offset.y + size * coss[(i + rotation) % 6],
-    };
-  });
+function drawHex(g: Graphics, colors: string[], rotation: number, offset: PointData, size: number, stroke = true) {
+  const vertices = Array.from(
+    { length: 6 },
+    (_, i) => new Point(offset.x + size * sins[(i + rotation) % 6], offset.y + size * coss[(i + rotation) % 6]),
+  );
 
   if (stroke) strokePolygon(g, vertices);
   if (colors.length === 1) {
@@ -47,7 +45,7 @@ function drawHex(g: Graphics, colors: string[], rotation: number, offset: Point,
   }
 }
 
-export function drawAnimals(g: Graphics, center: Point, colors: string[], occupied = false) {
+export function drawAnimals(g: Graphics, center: PointData, colors: string[], occupied = false) {
   const offsets = getAnimalsOffset(colors.length);
   if (offsets.length !== colors.length) return;
   colors.forEach((color, i) => {

@@ -1,4 +1,5 @@
-export enum MovePart {
+export enum GameState {
+  Waiting,
   PickTile,
   PlaceTile,
   PickAnimal,

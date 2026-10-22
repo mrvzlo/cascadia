@@ -1,4 +1,4 @@
-import { Application, Point } from "pixi.js";
+import { Application, Container, Point } from "pixi.js";
 import { CenterBoard } from "../components/center-board";
 import GameWorld from "../components/game-world";
 import { PlacedTile } from "../components/placed-tile";
@@ -6,6 +6,7 @@ import PlayerBoard from "../components/player-board";
 import { Tile } from "../components/tile";
 import { shuffle } from "./generic/shuffle.system";
 import Map2D from "../helpers/map2d";
+import { GameState } from "../components/game-state";
 
 export function SetupGame(app: Application) {
   const world: GameWorld = {
@@ -13,9 +14,12 @@ export function SetupGame(app: Application) {
     player: setupPlayerBoard(),
     round: 0,
     hitboxes: [],
-    history: [],
-    movePart: 0,
+    gameState: GameState.Waiting,
     windowSize: app.canvas,
+    playerContainer: new Container(),
+    scoreContainer: new Container(),
+    topContainer: new Container(),
+    fadingContainer: new Container(),
   };
   return world;
 }
