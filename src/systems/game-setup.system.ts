@@ -14,12 +14,14 @@ export function SetupGame(app: Application) {
     player: setupPlayerBoard(),
     round: 0,
     hitboxes: [],
-    gameState: GameState.Waiting,
+    gameState: GameState.PickTile,
+    isWaiting: false,
     windowSize: app.canvas,
     playerContainer: new Container(),
     scoreContainer: new Container(),
     topContainer: new Container(),
     fadingContainer: new Container(),
+    dragContainer: new Container(),
   };
   return world;
 }

@@ -9,13 +9,14 @@ export function setupClickHandling(app: Application, world: GameWorld) {
   app.stage.addChild(world.playerContainer);
   app.stage.addChild(world.topContainer);
   app.stage.addChild(world.fadingContainer);
+  app.stage.addChild(world.dragContainer);
   app.stage.addChild(world.scoreContainer);
 
   app.stage.eventMode = "static";
   app.stage.hitArea = app.screen;
   app.stage.on("pointerdown", (event) => {
-    if (world.gameState === GameState.Waiting) return;
-    handleClick(world, event.global);
+    if (world.isWaiting) return;
+    handleClick(world, event.global).finally(() => (world.isWaiting = false));
   });
   Object.assign(window, { baba: () => world });
   redraw(world);

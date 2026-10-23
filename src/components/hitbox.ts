@@ -8,6 +8,6 @@ export default interface Hitbox extends PointData {
   isHex: boolean;
   container: ContainerType;
 
-  onClick: (() => Promise<void>) | ((me: Hitbox) => void);
+  onClick: ((me: Hitbox) => Promise<void>) | ((me: Hitbox) => void);
   onRender: (me: Hitbox, g: Graphics) => void;
 }

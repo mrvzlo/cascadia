@@ -1,4 +1,4 @@
-import { Container, Size } from "pixi.js";
+import { Container, Point, Size } from "pixi.js";
 import { CenterBoard } from "./center-board";
 import Hitbox from "./hitbox";
 import { GameState } from "./game-state";
@@ -12,6 +12,7 @@ export default interface GameWorld {
   lastPickup?: Pickup;
   gameState: GameState;
   // UX
+  isWaiting: boolean;
   hitboxes: Hitbox[];
   // UI
   windowSize: Size;
@@ -19,4 +20,6 @@ export default interface GameWorld {
   topContainer: Container;
   scoreContainer: Container;
   fadingContainer: Container;
+
+  dragContainer: Container;
 }
