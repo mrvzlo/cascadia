@@ -3,7 +3,7 @@ import GameWorld from "../components/game-world";
 import Hitbox from "../components/hitbox";
 import { SQRT3 } from "../consts/sizes";
 import { GameState } from "../components/game-state";
-import { redraw } from "../systems/generic/base-animation.system";
+import { redraw } from "../systems/animations/base-animation.system";
 
 export function setupClickHandling(app: Application, world: GameWorld) {
   app.stage.addChild(world.playerContainer);

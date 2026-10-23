@@ -1,8 +1,8 @@
 import { Point } from "pixi.js";
 import GameWorld from "../../components/game-world";
 import { GameState } from "../../components/game-state";
-import { redraw, redrawWithFadeIn, redrawWithFadeOut } from "../generic/base-animation.system";
-import { AddCenterTiles } from "./round-shuffler.system";
+import { pause, redraw } from "../animations/base-animation.system";
+import { animateStockAdding, animateStockDelete } from "../animations/tile-replace.system";
 
 export function pickTile(world: GameWorld, id: number) {
   if (world.gameState !== GameState.PickTile) return;
@@ -37,33 +37,12 @@ export async function placeAnimal(world: GameWorld, coords: Point) {
   if (!tile.animals.includes(world.lastPickup.animal)) return;
   tile.occupied = world.lastPickup!.animal;
   world.gameState = GameState.Waiting;
-  animateTileReplace(world, world.lastPickup.tileIndex, world.lastPickup.animalIndex);
-}
 
-async function animateTileReplace(world: GameWorld, tile: number, animal: number) {
-  world.center.tileFading = tile;
-  world.center.animalFading = animal;
-  await redrawWithFadeOut(world);
-  delete world.center.tileStock[tile];
-  delete world.center.animalStock[animal];
-  delete world.lastPickup;
-  redraw(world);
-  AddCenterTiles(world, false);
-  await redrawWithFadeIn(world);
-
-  delete world.center.tileFading;
-  delete world.center.animalFading;
+  await animateStockDelete(world, world.lastPickup.tileIndex, world.lastPickup.animalIndex);
+  await animateStockAdding(world);
   const randomDelete = Math.floor(Math.random() * 4);
-  world.center.tileFading = randomDelete;
-  world.center.animalFading = randomDelete;
-  await redrawWithFadeOut(world);
-  delete world.center.tileStock[randomDelete];
-  delete world.center.animalStock[randomDelete];
-  redraw(world);
-  AddCenterTiles(world);
-  await redrawWithFadeIn(world);
-
-  delete world.center.tileFading;
-  delete world.center.animalFading;
-  redraw(world);
+  await animateStockDelete(world, randomDelete, randomDelete);
+  await animateStockAdding(world);
+  delete world.lastPickup;
+  world.gameState = GameState.PickTile;
 }
