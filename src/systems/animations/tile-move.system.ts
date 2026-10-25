@@ -3,7 +3,7 @@ import { rotationToDeg } from "../render/hex-render.system";
 
 const MOVE_DURATION = 200;
 
-export function animateTileMove(hitbox: Hitbox) {
+export function animateTileMove(hitbox: Hitbox, duration = MOVE_DURATION) {
   const graphic = hitbox.graphics;
   const start = graphic.position;
   const end = hitbox.point;
@@ -11,7 +11,7 @@ export function animateTileMove(hitbox: Hitbox) {
   const startTime = performance.now();
   return new Promise<void>((resolve) => {
     const animate = (now: number) => {
-      const progress = Math.min((now - startTime) / MOVE_DURATION, 1);
+      const progress = Math.min((now - startTime) / duration, 1);
       const eased = progress * progress * (3 - 2 * progress);
       graphic.position.set(start.x + (end.x - start.x) * eased, start.y + (end.y - start.y) * eased);
 

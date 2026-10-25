@@ -1,12 +1,12 @@
 import GameWorld from "../components/game-world";
-import { CreateStockGraphics } from "./hitboxes/create-hitboxes.system";
+import { CreateGraphics } from "./hitboxes/create-hitboxes.system";
 import { RenderPlayerScore } from "./render/score-render.system";
 import { Graphics } from "pixi.js";
 import { PLAYER_BOARD_TOP } from "../consts/sizes";
 
 export function DrawBoard(world: GameWorld) {
   renderLayout(world);
-  CreateStockGraphics(world);
+  CreateGraphics(world);
   UpdateScore(world);
 }
 

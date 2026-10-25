@@ -8,7 +8,6 @@ import { shuffle } from "./generic/shuffle.system";
 import Map2D from "../helpers/map2d";
 import { GameStateType } from "../consts/enums/game-state.type";
 import { IdManager } from "../helpers/id-manager";
-import AnimalTile from "../components/animal-tile";
 
 export function SetupGame(app: Application) {
   const idMngr = new IdManager();
@@ -32,7 +31,7 @@ const setupGameBoard = (idMngr: IdManager): CenterBoard => ({
   discarded: [],
   tileStock: [],
   animalStock: [],
-  animalShuffled: shuffle(getAllAnimals(idMngr)),
+  animalShuffled: shuffle(getAllAnimals()),
   tileShuffled: shuffle(getAllTiles(idMngr)),
 });
 
@@ -44,9 +43,9 @@ const setupPlayerBoard = (idMngr: IdManager): PlayerBoard => ({
   edges: new Map2D(),
 });
 
-function getAllAnimals(idMngr: IdManager) {
-  const tiles: AnimalTile[] = [];
-  for (let i = 0; i < 100; i++) tiles.push({ id: idMngr.getNext("A"), value: i % 5 });
+function getAllAnimals() {
+  const tiles: number[] = [];
+  for (let i = 0; i < 50; i++) tiles.push(i % 5);
   return tiles;
 }
 

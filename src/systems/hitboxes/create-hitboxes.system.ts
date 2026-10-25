@@ -1,6 +1,5 @@
 import GameWorld from "../../components/game-world";
 import { HEX_SIZE, STOCK_SIZE } from "../../consts/sizes";
-import { pickAnimal, pickTile, placeAnimal, placeTile } from "../round/move-parts.system";
 import Hitbox from "../../components/hitbox";
 import { drawCenterHex, drawEmptyHex, drawPlayerHex } from "../render/hex-render.system";
 import { getTilePointOnPlayerBoard, getTilePointOnStock } from "../render/board-position.system";
@@ -10,7 +9,7 @@ import { PlacedTile } from "../../components/placed-tile";
 import { getNear } from "./available-move.system";
 import { EdgeTile } from "../../components/edge-tile";
 
-export function CreateStockGraphics(world: GameWorld) {
+export function CreateGraphics(world: GameWorld) {
   for (let i = 0; i < STOCK_SIZE; i++) {
     createStockTileGraphics(world, i);
     createAnimalGraphics(world, i);
@@ -56,7 +55,9 @@ function createAnimalGraphics(world: GameWorld, index: number) {
 }
 
 function createBoardTileHitbox(world: GameWorld, tile: PlacedTile) {
-  if (!tile || tile.hitboxId !== undefined) return;
+  if (!tile) return;
+  createSurroundingEdges(world, tile);
+  if (tile.hitboxId !== undefined) return;
   const tilePos = getTilePointOnPlayerBoard(world, tile.coords);
   const id = world.idMngr.getNext("H");
   tile.hitboxId = id;
@@ -71,7 +72,6 @@ function createBoardTileHitbox(world: GameWorld, tile: PlacedTile) {
   };
   world.hitboxes.set(id, hitbox);
   world.playerContainer.addChild(hitbox.graphics);
-  createSurroundingEdges(world, tile);
 }
 
 function createSurroundingEdges(world: GameWorld, tile: PlacedTile) {

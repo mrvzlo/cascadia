@@ -24,7 +24,6 @@ export function setupClickHandling(app: Application, world: GameWorld) {
   DrawBoard(world);
 
   window.addEventListener("keydown", (e) => {
-    //todo animate
     if (e.code === "KeyQ" || e.code === "KeyE") rotateActiveTile(world, e.code === "KeyQ");
   });
 }
