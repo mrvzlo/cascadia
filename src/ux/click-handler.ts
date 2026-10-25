@@ -3,15 +3,15 @@ import GameWorld from "../components/game-world";
 import Hitbox from "../components/hitbox";
 import { SQRT3 } from "../consts/sizes";
 import { GameStateType } from "../consts/enums/game-state.type";
-import { animateTileRotate } from "../systems/animations/tile-move.system";
+import { animateTileRotate } from "../systems/animations/tile-animation.system";
 import { DrawBoard } from "../systems/draw-board.system";
 import { GameElementType } from "../consts/enums/game-element.type";
 import { pickAnimal, pickTile, placeAnimal, placeTile } from "../systems/round/move-parts.system";
 import { checkElementActiveState, setGameStateToPickAnimal, setGameStateToPickTile } from "../systems/round/state-management.system";
 
 export function setupClickHandling(app: Application, world: GameWorld) {
-  app.stage.addChild(world.playerContainer);
-  app.stage.addChild(world.topContainer);
+  app.stage.addChild(world.tileContainer);
+  app.stage.addChild(world.animalContainer);
   app.stage.addChild(world.scoreContainer);
 
   app.stage.eventMode = "static";

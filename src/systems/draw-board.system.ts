@@ -19,5 +19,5 @@ function renderLayout(world: GameWorld) {
   const g = new Graphics();
   g.rect(0, PLAYER_BOARD_TOP, world.windowSize.width, 1).stroke(0);
   world.layoutGraphics = g;
-  world.topContainer.addChild(g);
+  world.tileContainer.addChild(g);
 }

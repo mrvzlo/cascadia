@@ -32,7 +32,7 @@ function createStockTileGraphics(world: GameWorld, index: number) {
     graphics: drawCenterHex(tile, tilePos),
   };
   world.hitboxes.set(tile.hitboxId, hitbox);
-  world.topContainer.addChild(hitbox.graphics);
+  world.tileContainer.addChild(hitbox.graphics);
 }
 
 function createAnimalGraphics(world: GameWorld, index: number) {
@@ -51,7 +51,7 @@ function createAnimalGraphics(world: GameWorld, index: number) {
   };
 
   world.hitboxes.set(id, hitbox);
-  world.topContainer.addChild(hitbox.graphics);
+  world.animalContainer.addChild(hitbox.graphics);
 }
 
 function createBoardTileHitbox(world: GameWorld, tile: PlacedTile) {
@@ -71,7 +71,7 @@ function createBoardTileHitbox(world: GameWorld, tile: PlacedTile) {
     graphics: drawPlayerHex(tile, tilePos),
   };
   world.hitboxes.set(id, hitbox);
-  world.playerContainer.addChild(hitbox.graphics);
+  world.tileContainer.addChild(hitbox.graphics);
 }
 
 function createSurroundingEdges(world: GameWorld, tile: PlacedTile) {
@@ -97,5 +97,5 @@ function createEdgeTileHitbox(world: GameWorld, edge: EdgeTile) {
     graphics: drawEmptyHex(tilePos),
   };
   world.hitboxes.set(id, hitbox);
-  world.playerContainer.addChild(hitbox.graphics);
+  world.animalContainer.addChild(hitbox.graphics);
 }

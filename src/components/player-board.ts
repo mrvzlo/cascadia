@@ -8,4 +8,5 @@ export default interface PlayerBoard {
   score: number;
   animalScore: number[];
   terrainScore: number[];
+  bonusScore: number;
 }

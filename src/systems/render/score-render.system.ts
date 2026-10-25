@@ -41,5 +41,5 @@ function addText(text: string, point: Point, container: Container) {
 
 function setScore(player: PlayerBoard) {
   setTerrainScore(player);
-  player.score = player.animalScore.reduce((a, b) => a + b, 0) + player.terrainScore.reduce((a, b) => a + b, 0);
+  player.score = player.animalScore.reduce((a, b) => a + b, 0) + player.terrainScore.reduce((a, b) => a + b, 0) + player.bonusScore;
 }

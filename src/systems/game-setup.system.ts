@@ -19,9 +19,9 @@ export function SetupGame(app: Application) {
     gameState: GameStateType.PickTile,
     isWaiting: false,
     windowSize: app.canvas,
-    playerContainer: new Container(),
+    animalContainer: new Container(),
     scoreContainer: new Container(),
-    topContainer: new Container(),
+    tileContainer: new Container(),
     idMngr,
   };
   return world;
@@ -41,6 +41,7 @@ const setupPlayerBoard = (idMngr: IdManager): PlayerBoard => ({
   terrainScore: [0, 0, 0, 0, 0],
   tiles: getStartingTiles(idMngr),
   edges: new Map2D(),
+  bonusScore: 0,
 });
 
 function getAllAnimals() {

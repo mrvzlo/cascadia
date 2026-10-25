@@ -17,8 +17,8 @@ export default interface GameWorld {
   hitboxes: Map<string, Hitbox>;
   // UI
   windowSize: Size;
-  playerContainer: Container;
-  topContainer: Container;
+  animalContainer: Container;
+  tileContainer: Container;
   scoreContainer: Container;
 
   layoutGraphics?: Graphics;

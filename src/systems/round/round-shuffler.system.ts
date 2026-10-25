@@ -1,7 +1,7 @@
 import GameWorld from "../../components/game-world";
 import { HEX_SIZE, STOCK_SIZE } from "../../consts/sizes";
 import { CreateGraphics } from "../hitboxes/create-hitboxes.system";
-import { animateTileMove } from "../animations/tile-move.system";
+import { animateTileMove } from "../animations/tile-animation.system";
 import { setGameStateToPickTile } from "./state-management.system";
 import { shuffle } from "../generic/shuffle.system";
 
@@ -97,7 +97,7 @@ function afterClearStock(world: GameWorld, tilesToRemove: number[], animalsToRem
     const hitbox = world.hitboxes.get(world.center.tileStock[x].hitboxId!)!;
     delete world.center.tileStock[x];
     hitbox.graphics.clear();
-    world.topContainer.removeChild(hitbox.graphics);
+    world.tileContainer.removeChild(hitbox.graphics);
   });
   animalsToRemove.forEach((x) => {
     const tile = world.center.animalStock[x];
@@ -105,7 +105,7 @@ function afterClearStock(world: GameWorld, tilesToRemove: number[], animalsToRem
     const hitbox = world.hitboxes.get(tile.hitboxId!)!;
     delete world.center.animalStock[x];
     hitbox.graphics.clear();
-    world.topContainer.removeChild(hitbox.graphics);
+    world.animalContainer.removeChild(hitbox.graphics);
   });
   shuffle(world.center.animalShuffled);
 }

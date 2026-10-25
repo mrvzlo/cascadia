@@ -1,5 +1,5 @@
 import GameWorld from "../../components/game-world";
-import { animateTileMove } from "../animations/tile-move.system";
+import { animateTileMove } from "../animations/tile-animation.system";
 import { getTilePointOnPlayerBoard, getTilePointOnStock } from "../render/board-position.system";
 import Hitbox from "../../components/hitbox";
 import { GameElementType } from "../../consts/enums/game-element.type";
@@ -34,7 +34,7 @@ export async function placeTile(world: GameWorld, edgeHitbox: Hitbox) {
 function removeEdge(world: GameWorld, edgeTile: EdgeTile, edgeHitbox: Hitbox) {
   world.player.edges.delete(edgeTile.id);
   edgeHitbox.graphics.clear();
-  world.playerContainer.removeChild(edgeHitbox.graphics);
+  world.animalContainer.removeChild(edgeHitbox.graphics);
 }
 
 async function moveTileFromStockToBoard(world: GameWorld, index: number, tile: HexTile, coords: Coords, hitbox: Hitbox) {
@@ -81,10 +81,12 @@ export async function placeAnimal(world: GameWorld, toPlaceHitbox: Hitbox) {
   pickup.animalHitbox!.renderedType = GameElementType.BoardAnimal;
   await animateTileMove(pickup.animalHitbox!);
   delete world.center.animalStock[pickup.animalIndex];
+  if (placementTile.animals.length === 1) world.player.bonusScore++;
+
+  UpdateScore(world);
 
   await AddCenterTiles(world);
   const randomDelete = Math.floor(Math.random() * 4);
   await clearStock(world, [randomDelete], [randomDelete]);
   await AddCenterTiles(world);
-  UpdateScore(world);
 }
