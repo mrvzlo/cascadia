@@ -2,13 +2,12 @@ import { Graphics, PointData } from "pixi.js";
 import GameWorld from "../../components/game-world";
 import Hitbox from "../../components/hitbox";
 
-const MOVE_DURATION = 450;
+const MOVE_DURATION = 200;
 
 export function animateTileMove(world: GameWorld, hitbox: Hitbox, from: PointData, to: PointData) {
-  const graphic = new Graphics();
   hitbox.x = 0;
   hitbox.y = 0;
-  hitbox.onRender(hitbox, graphic);
+  const graphic = hitbox.onRender(hitbox);
   graphic.position.copyFrom(from);
   world.dragContainer.addChild(graphic);
 

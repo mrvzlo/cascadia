@@ -3,10 +3,13 @@
   "scripts": {
     "build": "node build.js",
     "serve": "npx serve dist",
+    "watch": "concurrently \"npm run watch-build\" \"npm run serve\"",
     "watch-build": "nodemon --watch src --ext ts,html --exec \"npm run build\""
   },
   "devDependencies": {
+    "concurrently": "^10.0.6",
     "esbuild": "^0.25.5",
+    "live-server": "^1.2.2",
     "nodemon": "^3.1.10"
   },
   "dependencies": {

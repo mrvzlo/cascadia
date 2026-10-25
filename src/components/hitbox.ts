@@ -9,5 +9,5 @@ export default interface Hitbox extends PointData {
   container: ContainerType;
 
   onClick: ((me: Hitbox) => Promise<void>) | ((me: Hitbox) => void);
-  onRender: (me: Hitbox, g: Graphics) => void;
+  onRender: (me: Hitbox) => Graphics;
 }

@@ -17,18 +17,14 @@ export function DrawBoard(world: GameWorld) {
 }
 
 function renderHitboxes(world: GameWorld) {
-  const createGraphics = (c: Container) => {
-    const g = new Graphics();
-    c.addChild(g);
-    return g;
-  };
+  const containers: Container[] = [];
+  containers[ContainerType.Fading] = world.fadingContainer;
+  containers[ContainerType.Player] = world.playerContainer;
+  containers[ContainerType.Stock] = world.topContainer;
 
-  const graphics: Graphics[] = [];
-  graphics[ContainerType.Fading] = createGraphics(world.fadingContainer);
-  graphics[ContainerType.Player] = createGraphics(world.playerContainer);
-  graphics[ContainerType.Stock] = createGraphics(world.topContainer);
-
-  world.hitboxes.forEach((h) => h.onRender(h, graphics[h.container]));
+  world.hitboxes.forEach((h) => {
+    containers[h.container].addChild(h.onRender(h));
+  });
 }
 
 function renderLayout(world: GameWorld) {

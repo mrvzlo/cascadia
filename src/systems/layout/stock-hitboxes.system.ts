@@ -21,7 +21,7 @@ export function SetStockHitboxes(world: GameWorld) {
         isHex: true,
         container: world.center.tileFading === i ? ContainerType.Fading : ContainerType.Stock,
         onClick: (me) => pickTile(world, i, me),
-        onRender: (me, g) => drawTile(me, world, g, i, tile),
+        onRender: (me) => drawTile(me, world, i, tile),
       });
     const animal = world.center.animalStock[i];
     const animalPos = getTilePointOnStock(world, i, 1);
@@ -32,20 +32,22 @@ export function SetStockHitboxes(world: GameWorld) {
         isHex: false,
         container: world.center.animalFading === i ? ContainerType.Fading : ContainerType.Stock,
         onClick: (me) => pickAnimal(world, i, me),
-        onRender: (me, g) => drawAnimal(me, world, g, i, animal),
+        onRender: (me) => drawAnimal(me, world, i, animal),
       });
   }
 }
 
-function drawTile(hitbox: Hitbox, world: GameWorld, g: Graphics, index: number, tile: Tile) {
+function drawTile(hitbox: Hitbox, world: GameWorld, index: number, tile: Tile) {
   const unselected =
     (world.gameState === GameState.PlaceTile && world.lastPickup?.tileIndex !== index) || world.gameState > GameState.PlaceTile;
-  drawCenterHex(g, tile, hitbox, unselected);
+  return drawCenterHex(tile, hitbox, unselected);
 }
 
-function drawAnimal(hitbox: Hitbox, world: GameWorld, g: Graphics, index: number, animal: number) {
+function drawAnimal(hitbox: Hitbox, world: GameWorld, index: number, animal: number) {
+  const g = new Graphics();
   const unselected =
     world.gameState === GameState.PlaceTile || (world.gameState === GameState.PlaceAnimal && world.lastPickup?.animalIndex !== index);
   const color = AnimalColors[animal] + (unselected ? "1" : "");
   g.circle(hitbox.x, hitbox.y, PLACED_ANIMAL_R).fill(color).stroke({ width: 2, color: "#000a" });
+  return g;
 }

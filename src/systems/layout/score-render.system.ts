@@ -1,14 +1,12 @@
-import { Container, Graphics, Point, Text, TextStyleOptions } from "pixi.js";
+import { Container, Point, Text, TextStyleOptions } from "pixi.js";
 import { setTerrainScore } from "../scoring/terrain-score.system";
-import { drawAnimals, drawPlayerHex } from "./hex-render.system";
+import { drawPlayerHex } from "./hex-render.system";
 import GameWorld from "../../components/game-world";
 import { HEX_SIZE, SQRT3 } from "../../consts/sizes";
 import PlayerBoard from "../../components/player-board";
-import { AnimalColors } from "../../consts/tile-colors";
+import { drawAnimal } from "./animal.render.system";
 
 export function RenderPlayerScore(container: Container, world: GameWorld) {
-  const g = new Graphics();
-  container.addChild(g);
   setScore(world.player);
   const scores = [...world.player.terrainScore];
   scores.push(world.player.score);
@@ -18,16 +16,17 @@ export function RenderPlayerScore(container: Container, world: GameWorld) {
       world.windowSize.height - HEX_SIZE * (i + 1) * 1.5,
     );
 
-    drawPlayerHex(g, { point: new Point(0), bioms: [i], animals: [] }, p);
+    container.addChild(drawPlayerHex({ point: new Point(0), bioms: [i], animals: [] }, p));
     addText(scores[i] + "", p, container);
   }
+
   for (let i = 0; i < world.player.animalScore.length; i++) {
     const p = new Point(
       world.windowSize.width - HEX_SIZE - (((i % 2) + 2) * HEX_SIZE * SQRT3) / 2,
       world.windowSize.height - HEX_SIZE * (i + 1) * 1.5,
     );
 
-    drawAnimals(g, p, [AnimalColors[i]], true);
+    container.addChild(drawAnimal(p, i));
     addText(world.player.animalScore[i] + "", p, container);
   }
 }

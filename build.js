@@ -1,5 +1,5 @@
 import { build } from 'esbuild';
-import { copyFileSync } from 'fs';
+import { copyFileSync, cpSync } from 'fs';
 
 await build({
   entryPoints: ['src/main.ts'],
@@ -12,3 +12,4 @@ await build({
 });
 
 copyFileSync('src/index.html', 'dist/index.html');
+cpSync('src/assets', 'dist/assets', { recursive: true });

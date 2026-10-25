@@ -17,7 +17,7 @@ export function SetPlacedTilesHitboxes(world: GameWorld) {
       r: HEX_SIZE,
       isHex: true,
       container: ContainerType.Player,
-      onRender: (me, g) => drawPlayerHex(g, tile, me),
+      onRender: (me) => drawPlayerHex(tile, me),
       onClick: () => placeAnimal(world, tile.point),
     };
     world.hitboxes.push(hit);
@@ -29,7 +29,7 @@ export function SetPlacedTilesHitboxes(world: GameWorld) {
       r: HEX_SIZE,
       isHex: true,
       container: ContainerType.Player,
-      onRender: (me, g) => drawEmptyHex(g, me, world.gameState !== GameState.PlaceTile),
+      onRender: (me) => drawEmptyHex(me, world.gameState !== GameState.PlaceTile),
       onClick: () => placeTile(world, boardCoords),
     };
     world.hitboxes.push(hit);
