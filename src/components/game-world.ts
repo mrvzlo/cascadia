@@ -1,25 +1,27 @@
-import { Container, Point, Size } from "pixi.js";
+import { Container, Graphics, Point, Size } from "pixi.js";
 import { CenterBoard } from "./center-board";
 import Hitbox from "./hitbox";
-import { GameState } from "./game-state";
+import { GameStateType } from "../consts/enums/game-state.type";
 import Pickup from "./pickup";
 import PlayerBoard from "./player-board";
+import { IdManager } from "../helpers/id-manager";
 
 export default interface GameWorld {
   round: number;
   center: CenterBoard;
   player: PlayerBoard;
   lastPickup?: Pickup;
-  gameState: GameState;
+  gameState: GameStateType;
   // UX
   isWaiting: boolean;
-  hitboxes: Hitbox[];
+  hitboxes: Map<string, Hitbox>;
   // UI
   windowSize: Size;
   playerContainer: Container;
   topContainer: Container;
   scoreContainer: Container;
-  fadingContainer: Container;
 
-  dragContainer: Container;
+  layoutGraphics?: Graphics;
+  //helpers
+  idMngr: IdManager;
 }

@@ -1,4 +1,4 @@
-export enum GameState {
+export enum GameStateType {
   PickTile,
   PlaceTile,
   PickAnimal,

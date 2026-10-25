@@ -1,6 +1,4 @@
 import { Container } from "pixi.js";
-import GameWorld from "../../components/game-world";
-import { DrawBoard } from "../layout/draw-board.system";
 
 export function fadeTo(fromA: number, toA: number, container: Container, duration: number) {
   const startTime = performance.now();
@@ -20,12 +18,4 @@ export function fadeTo(fromA: number, toA: number, container: Container, duratio
 
 export function pause(duration: number) {
   return new Promise<void>((resolve) => setTimeout(resolve, duration));
-}
-
-export function redraw(world: GameWorld) {
-  world.fadingContainer.removeChildren().forEach((child) => child.destroy());
-  world.playerContainer.removeChildren().forEach((child) => child.destroy());
-  world.topContainer.removeChildren().forEach((child) => child.destroy());
-  world.scoreContainer.removeChildren().forEach((child) => child.destroy());
-  DrawBoard(world);
 }

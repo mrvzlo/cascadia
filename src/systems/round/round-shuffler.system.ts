@@ -1,8 +1,7 @@
-import { GameState } from "../../components/game-state";
 import GameWorld from "../../components/game-world";
 import { STOCK_SIZE } from "../../consts/sizes";
 
-export function AddCenterTiles(gameWorld: GameWorld, changeState = true) {
+export function AddCenterTiles(gameWorld: GameWorld) {
   let allSame = true;
 
   while (allSame) {
@@ -14,6 +13,4 @@ export function AddCenterTiles(gameWorld: GameWorld, changeState = true) {
 
     if (allSame) gameWorld.center.animalStock = [];
   }
-
-  if (changeState) gameWorld.gameState = GameState.PickTile;
 }

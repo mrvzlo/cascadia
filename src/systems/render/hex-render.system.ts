@@ -1,5 +1,5 @@
 import { Assets, FillPattern, Graphics, Point, PointData, Texture } from "pixi.js";
-import { Tile } from "../../components/tile";
+import { HexTile } from "../../components/hex-tile";
 import { HEX_SIZE } from "../../consts/sizes";
 import { PlacedTile } from "../../components/placed-tile";
 import { drawAnimalsOnTile } from "./animal.render.system";
@@ -25,12 +25,11 @@ export async function prepareTextures() {
   }
 }
 
-export function drawCenterHex(tile: Tile, offset: PointData, dim = false): Graphics {
+export function drawCenterHex(tile: HexTile, offset: PointData): Graphics {
   const g = new Graphics();
   drawHex(g, tile.bioms);
   drawAnimalsOnTile(g, tile.animals);
   g.position = offset;
-  g.alpha = dim ? 0.2 : 1;
   g.rotation = rotationToDeg(tile.rotation);
   return g;
 }
@@ -47,11 +46,11 @@ export function drawPlayerHex(tile: PlacedTile, offset: PointData): Graphics {
 
 export const rotationToDeg = (x?: number) => (Math.PI / 3) * -(x ?? 0);
 
-export function drawEmptyHex(offset: PointData, faded: boolean): Graphics {
+export function drawEmptyHex(offset: PointData): Graphics {
   const g = new Graphics();
   drawHex(g, [5], false);
   g.position = offset;
-  g.alpha = faded ? 0.1 : 0.4;
+  g.alpha = 0.4;
   g.scale.set(0.5);
   return g;
 }

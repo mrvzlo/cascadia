@@ -2,9 +2,9 @@ import { PointData, Graphics, Point } from "pixi.js";
 import { PLACED_ANIMAL_R, UNPLACE_ANIMAL_R } from "../../consts/sizes";
 import { AnimalColors } from "../../consts/tile-colors";
 
-export function drawAnimal(offset: PointData, animal: number, dim = false) {
+export function drawAnimal(offset: PointData, animal: number) {
   const g = new Graphics();
-  const color = AnimalColors[animal] + (dim ? "1" : "");
+  const color = AnimalColors[animal];
   g.circle(0, 0, PLACED_ANIMAL_R).fill(color).stroke({ width: 2, color: "#000a" });
   g.x = offset.x;
   g.y = offset.y;

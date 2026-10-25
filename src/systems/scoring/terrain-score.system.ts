@@ -1,7 +1,7 @@
-import { Point } from "pixi.js";
 import PlayerBoard from "../../components/player-board";
 import { PlacedTile } from "../../components/placed-tile";
-import { HexNeighboors } from "../layout/available-move.system";
+import { HexNeighbors } from "../hitboxes/available-move.system";
+import { Coords } from "../../components/coords";
 
 export function setTerrainScore(player: PlayerBoard) {
   for (let i = 0; i < player.terrainScore.length; i++) player.terrainScore[i] = getMaxRegionSize(player, i);
@@ -12,7 +12,7 @@ function getMaxRegionSize(board: PlayerBoard, color: number) {
   let maxRegionSize = 0;
 
   for (const tile of board.tiles.getAll()) {
-    const startKey = getPointKey(tile.point);
+    const startKey = getPointKey(tile.coords);
     if (!hasBiome(tile, color) || visited.has(startKey)) continue;
 
     const queue = [tile];
@@ -23,8 +23,8 @@ function getMaxRegionSize(board: PlayerBoard, color: number) {
       const current = queue[index];
       regionSize++;
 
-      for (const direction of HexNeighboors) {
-        const neighborPoint = new Point(current.point.x + direction.x, current.point.y + direction.y);
+      for (const direction of HexNeighbors) {
+        const neighborPoint: Coords = { intX: current.coords.intX + direction.intX, intY: current.coords.intY + direction.intY };
         const neighborKey = getPointKey(neighborPoint);
         if (visited.has(neighborKey)) continue;
 
@@ -61,16 +61,16 @@ function hasBiomeOnEdge(tile: PlacedTile, color: number, edge: number) {
   return tile.bioms[biomeIndex] === color;
 }
 
-function getSharedEdge(direction: Point) {
-  if (direction.x === 1 && direction.y === 1) return 0;
-  if (direction.x === 2) return 1;
-  if (direction.x === 1 && direction.y === -1) return 2;
-  if (direction.x === -1 && direction.y === -1) return 3;
-  if (direction.x === -2) return 4;
-  if (direction.x === -1 && direction.y === 1) return 5;
-  throw new Error(`Unsupported hex neighbor offset (${direction.x}, ${direction.y})`);
+function getSharedEdge(direction: Coords) {
+  if (direction.intX === 1 && direction.intY === 1) return 0;
+  if (direction.intX === 2) return 1;
+  if (direction.intX === 1 && direction.intY === -1) return 2;
+  if (direction.intX === -1 && direction.intY === -1) return 3;
+  if (direction.intX === -2) return 4;
+  if (direction.intX === -1 && direction.intY === 1) return 5;
+  throw new Error(`Unsupported hex neighbor offset (${direction.intX}, ${direction.intY})`);
 }
 
-function getPointKey(point: Point) {
-  return `${point.x},${point.y}`;
+function getPointKey(point: Coords) {
+  return `${point.intX}|${point.intY}`;
 }

@@ -1,29 +1,44 @@
-import { Graphics, PointData } from "pixi.js";
-import GameWorld from "../../components/game-world";
 import Hitbox from "../../components/hitbox";
+import { rotationToDeg } from "../render/hex-render.system";
 
 const MOVE_DURATION = 200;
 
-export function animateTileMove(world: GameWorld, hitbox: Hitbox, from: PointData, to: PointData) {
-  hitbox.x = 0;
-  hitbox.y = 0;
-  const graphic = hitbox.onRender(hitbox);
-  graphic.position.copyFrom(from);
-  world.dragContainer.addChild(graphic);
+export function animateTileMove(hitbox: Hitbox) {
+  const graphic = hitbox.graphics;
+  const start = graphic.position;
+  const end = hitbox.point;
 
   const startTime = performance.now();
   return new Promise<void>((resolve) => {
     const animate = (now: number) => {
       const progress = Math.min((now - startTime) / MOVE_DURATION, 1);
       const eased = progress * progress * (3 - 2 * progress);
-      graphic.position.set(from.x + (to.x - from.x) * eased, from.y + (to.y - from.y) * eased);
+      graphic.position.set(start.x + (end.x - start.x) * eased, start.y + (end.y - start.y) * eased);
 
       if (progress < 1) requestAnimationFrame(animate);
-      else {
-        world.dragContainer.removeChild(graphic);
-        graphic.destroy();
-        resolve();
-      }
+      else resolve();
+    };
+
+    requestAnimationFrame(animate);
+  });
+}
+
+export function animateTileRotate(hitbox: Hitbox, to: number) {
+  const graphic = hitbox.graphics;
+  let fromDeg = graphic?.rotation;
+  let toDeg = rotationToDeg(to);
+
+  if (toDeg - fromDeg > Math.PI) fromDeg += Math.PI * 2;
+  if (fromDeg - toDeg > Math.PI) fromDeg -= Math.PI * 2;
+
+  const startTime = performance.now();
+  return new Promise<void>((resolve) => {
+    const animate = (now: number) => {
+      const progress = Math.min((now - startTime) / MOVE_DURATION, 1);
+      const eased = progress * progress * (3 - 2 * progress);
+      graphic.rotation = fromDeg + (toDeg - fromDeg) * eased;
+      if (progress < 1) requestAnimationFrame(animate);
+      else resolve();
     };
 
     requestAnimationFrame(animate);

@@ -2,14 +2,16 @@ import { Application, Point } from "pixi.js";
 import GameWorld from "../components/game-world";
 import Hitbox from "../components/hitbox";
 import { SQRT3 } from "../consts/sizes";
-import { GameState } from "../components/game-state";
-import { redraw } from "../systems/animations/base-animation.system";
+import { GameStateType } from "../consts/enums/game-state.type";
+import { animateTileRotate } from "../systems/animations/tile-move.system";
+import { DrawBoard } from "../systems/draw-board.system";
+import { GameElementType } from "../consts/enums/game-element.type";
+import { pickAnimal, pickTile, placeAnimal, placeTile } from "../systems/round/move-parts.system";
+import { checkElementActiveState, setGameStateToPickAnimal, setGameStateToPickTile } from "../systems/round/state-management.system";
 
 export function setupClickHandling(app: Application, world: GameWorld) {
   app.stage.addChild(world.playerContainer);
   app.stage.addChild(world.topContainer);
-  app.stage.addChild(world.fadingContainer);
-  app.stage.addChild(world.dragContainer);
   app.stage.addChild(world.scoreContainer);
 
   app.stage.eventMode = "static";
@@ -19,7 +21,7 @@ export function setupClickHandling(app: Application, world: GameWorld) {
     handleClick(world, event.global).finally(() => (world.isWaiting = false));
   });
   Object.assign(window, { baba: () => world });
-  redraw(world);
+  DrawBoard(world);
 
   window.addEventListener("keydown", (e) => {
     //todo animate
@@ -27,27 +29,43 @@ export function setupClickHandling(app: Application, world: GameWorld) {
   });
 }
 
-function rotateActiveTile(world: GameWorld, left: boolean) {
-  if (world.gameState !== GameState.PlaceTile) return;
-  const tile = world.lastPickup!.tile;
-  tile.rotation = ((tile.rotation ?? 0) + (left ? 1 : 5)) % 6;
-  redraw(world);
+async function rotateActiveTile(world: GameWorld, left: boolean) {
+  if (!world.lastPickup) return;
+  const pickup = world.lastPickup!;
+  pickup.tile.rotation = ((pickup.tile.rotation ?? 0) + (left ? 1 : 5)) % 6;
+  await animateTileRotate(pickup.tileHitbox, pickup.tile.rotation);
 }
 
 async function handleClick(world: GameWorld, pos: Point) {
-  const clicked = world.hitboxes.find((h) => checkHexClick(h, pos));
-  if (clicked && clicked.onClick) await clicked.onClick(clicked);
-  else if (world.gameState === GameState.PlaceAnimal || world.gameState === GameState.PlaceTile) {
-    world.gameState--;
-    redraw(world);
+  const clicked = Array.from(world.hitboxes.values()).find(
+    (h) => checkElementActiveState(world.gameState, h.renderedType) && checkHexClick(h, pos),
+  );
+  if (clicked)
+    switch (world.gameState) {
+      case GameStateType.PickTile:
+        return pickTile(world, clicked);
+      case GameStateType.PlaceTile:
+        return placeTile(world, clicked);
+      case GameStateType.PickAnimal:
+        return pickAnimal(world, clicked);
+      case GameStateType.PlaceAnimal:
+        return placeAnimal(world, clicked);
+    }
+  else {
+    if (world.gameState === GameStateType.PlaceAnimal) setGameStateToPickAnimal(world);
+    if (world.gameState === GameStateType.PlaceTile) setGameStateToPickTile(world);
   }
 }
 
 function checkHexClick(hitbox: Hitbox, pos: Point) {
-  const dx = Math.abs(pos.x - hitbox.x);
-  const dy = Math.abs(pos.y - hitbox.y);
+  const dx = Math.abs(pos.x - hitbox.point.x);
+  const dy = Math.abs(pos.y - hitbox.point.y);
   if (dx * dx + dy * dy > hitbox.r * hitbox.r) return false;
-  if (hitbox.isHex) return dx <= (SQRT3 * hitbox.r) / 2 && SQRT3 * dx + dy <= SQRT3 * hitbox.r;
+  const isHex =
+    hitbox.renderedType === GameElementType.BoardTile ||
+    hitbox.renderedType === GameElementType.EdgeTile ||
+    hitbox.renderedType === GameElementType.StockTile;
+  if (isHex) return dx <= (SQRT3 * hitbox.r) / 2 && SQRT3 * dx + dy <= SQRT3 * hitbox.r;
   return true;
 }
 

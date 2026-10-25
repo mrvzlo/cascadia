@@ -1,22 +1,29 @@
-import { Point } from "pixi.js";
+import { Coords } from "../components/coords";
 
 export default class Map2D<T> {
-  private inner: Map<number, Map<number, T>> = new Map();
+  private inner: Map<string, T> = new Map();
 
-  get(point: Point) {
-    return this.inner.get(point.x)?.get(point.y)!;
+  get(point: Coords) {
+    return this.inner.get(this.getKey(point));
   }
 
-  set(point: Point, value: T) {
-    if (!this.inner.has(point.x)) this.inner.set(point.x, new Map());
-    this.inner.get(point.x)!.set(point.y, value);
+  set(point: Coords, value: T) {
+    return this.inner.set(this.getKey(point), value);
   }
 
-  has(point: Point) {
-    return this.inner.has(point.x) && this.inner.get(point.x)!.has(point.y);
+  has(point: Coords) {
+    return this.inner.has(this.getKey(point));
   }
 
   getAll() {
-    return Array.from(this.inner.values()).flatMap((row) => Array.from(row.values()));
+    return Array.from(this.inner.values());
+  }
+
+  delete(key: string) {
+    this.inner.delete(key);
+  }
+
+  getKey(point: Coords) {
+    return point.intX + "|" + point.intY;
   }
 }

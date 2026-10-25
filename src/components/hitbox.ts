@@ -1,13 +1,12 @@
 import { Graphics, PointData } from "pixi.js";
-import { PlacedTile } from "./placed-tile";
-import { ContainerType } from "./container.type";
+import { GameElementType } from "../consts/enums/game-element.type";
 
-export default interface Hitbox extends PointData {
+export default interface Hitbox {
+  id: string;
+  point: PointData;
   r: number;
-  tile?: PlacedTile;
-  isHex: boolean;
-  container: ContainerType;
 
-  onClick: ((me: Hitbox) => Promise<void>) | ((me: Hitbox) => void);
-  onRender: (me: Hitbox) => Graphics;
+  renderedOn: string;
+  renderedType: GameElementType;
+  graphics: Graphics;
 }

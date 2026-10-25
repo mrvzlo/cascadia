@@ -1,10 +1,11 @@
 import Hitbox from "./hitbox";
-import { Tile } from "./tile";
+import { HexTile } from "./hex-tile";
+import AnimalTile from "./animal-tile";
 
 export default interface Pickup {
-  tile: Tile;
+  tile: HexTile;
   tileIndex: number;
-  animal: number;
+  animal: AnimalTile;
   animalIndex: number;
 
   tileHitbox: Hitbox;

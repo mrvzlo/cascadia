@@ -1,7 +1,7 @@
-import { Point } from "pixi.js";
-import { Tile } from "./tile";
+import { HexTile } from "./hex-tile";
+import { Coords } from "./coords";
 
-export interface PlacedTile extends Tile {
+export interface PlacedTile extends HexTile {
   occupied?: number;
-  point: Point;
+  coords: Coords;
 }

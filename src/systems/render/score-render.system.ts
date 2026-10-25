@@ -16,7 +16,7 @@ export function RenderPlayerScore(container: Container, world: GameWorld) {
       world.windowSize.height - HEX_SIZE * (i + 1) * 1.5,
     );
 
-    container.addChild(drawPlayerHex({ point: new Point(0), bioms: [i], animals: [] }, p));
+    container.addChild(drawPlayerHex({ coords: { intX: 0, intY: 0 }, bioms: [i], animals: [], id: world.idMngr.getNext("S") }, p));
     addText(scores[i] + "", p, container);
   }
 
