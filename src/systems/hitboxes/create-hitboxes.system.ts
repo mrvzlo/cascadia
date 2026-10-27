@@ -3,7 +3,7 @@ import { HEX_SIZE, STOCK_SIZE } from "../../consts/sizes";
 import Hitbox from "../../components/hitbox";
 import { drawCenterHex, drawEmptyHex, drawPlayerHex } from "../render/hex-render.system";
 import { getTilePointOnPlayerBoard, getTilePointOnStock } from "../render/board-position.system";
-import { drawAnimal } from "../render/animal.render.system";
+import { drawAnimal } from "../render/animal-render.system";
 import { GameElementType } from "../../consts/enums/game-element.type";
 import { PlacedTile } from "../../components/placed-tile";
 import { getNear } from "./available-move.system";
@@ -47,7 +47,7 @@ function createAnimalGraphics(world: GameWorld, index: number) {
     r: HEX_SIZE,
     renderedOn: tile.id,
     renderedType: GameElementType.StockAnimal,
-    graphics: drawAnimal(animalPos, tile.value),
+    graphics: drawAnimal(animalPos, tile.value, true),
   };
 
   world.hitboxes.set(id, hitbox);

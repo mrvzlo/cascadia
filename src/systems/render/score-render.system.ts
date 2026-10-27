@@ -4,7 +4,7 @@ import { drawPlayerHex } from "./hex-render.system";
 import GameWorld from "../../components/game-world";
 import { HEX_SIZE, SQRT3 } from "../../consts/sizes";
 import PlayerBoard from "../../components/player-board";
-import { drawAnimal } from "./animal.render.system";
+import { drawAnimal } from "./animal-render.system";
 
 export function RenderPlayerScore(container: Container, world: GameWorld) {
   setScore(world.player);
@@ -26,7 +26,7 @@ export function RenderPlayerScore(container: Container, world: GameWorld) {
       world.windowSize.height - HEX_SIZE * (i + 1) * 1.5,
     );
 
-    container.addChild(drawAnimal(p, i));
+    container.addChild(drawAnimal(p, i, false));
     addText(world.player.animalScore[i] + "", p, container);
   }
 }

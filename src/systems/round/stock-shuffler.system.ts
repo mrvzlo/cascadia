@@ -4,13 +4,15 @@ import { CreateGraphics } from "../hitboxes/create-hitboxes.system";
 import { animateTileMove } from "../animations/tile-animation.system";
 import { setGameStateToPickTile } from "./state-management.system";
 import { shuffle } from "../generic/shuffle.system";
+import { findModeCount } from "../generic/mode.system";
 
 const DECK_Y = -HEX_SIZE * 2;
 const animalResetIndexes = [0, 1, 2, 3];
 
 export async function AddCenterTiles(gameWorld: GameWorld) {
+  const allSame = () => findModeCount(gameWorld.center.animalStock.map((x) => x.value)) === STOCK_SIZE;
   await fillStock(gameWorld);
-  while (areAllAnimalsSame(gameWorld)) {
+  while (allSame()) {
     await clearStock(gameWorld, [], animalResetIndexes);
     await fillStock(gameWorld);
   }
@@ -67,12 +69,6 @@ function animateStockAppearance(world: GameWorld, tilesToAnimate: number[], anim
     animations.push(animateTileMove(hitbox, 500));
   });
   return animations;
-}
-
-function areAllAnimalsSame(world: GameWorld) {
-  let allSame = true;
-  for (let i = 1; i < STOCK_SIZE; i++) allSame &&= world.center.animalStock[i].value === world.center.animalStock[0].value;
-  return allSame;
 }
 
 function animateStockClear(world: GameWorld, tilesToRemove: number[], animalsToRemove: number[]) {
