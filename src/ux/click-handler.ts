@@ -6,13 +6,15 @@ import { GameStateType } from "../consts/enums/game-state.type";
 import { animateTileRotate } from "../systems/animations/tile-animation.system";
 import { DrawBoard } from "../systems/draw-board.system";
 import { GameElementType } from "../consts/enums/game-element.type";
-import { pickAnimal, pickTile, placeAnimal, placeTile } from "../systems/round/move-parts.system";
+import { pickAnimal, pickTile, placeAnimal, placeTile, removeAnimal } from "../systems/round/move-parts.system";
 import { checkElementActiveState, setGameStateToPickAnimal, setGameStateToPickTile } from "../systems/round/state-management.system";
+import { CancelKey, EKey, QKey } from "../consts/keys";
 
 export function setupClickHandling(app: Application, world: GameWorld) {
   app.stage.addChild(world.tileContainer);
   app.stage.addChild(world.animalContainer);
   app.stage.addChild(world.scoreContainer);
+  app.stage.addChild(world.controlsContiner);
 
   app.stage.eventMode = "static";
   app.stage.hitArea = app.screen;
@@ -39,7 +41,16 @@ async function handleClick(world: GameWorld, pos: Point) {
   const clicked = Array.from(world.hitboxes.values()).find(
     (h) => checkElementActiveState(world.gameState, h.renderedType) && checkHexClick(h, pos),
   );
-  if (clicked)
+  if (clicked) {
+    if (clicked.renderedType === GameElementType.TileControl) {
+      if (clicked.id === QKey) rotateActiveTile(world, true);
+      if (clicked.id === EKey) rotateActiveTile(world, false);
+      return;
+    }
+    if (clicked.renderedType === GameElementType.AnimalControl) {
+      if (clicked.id === CancelKey) removeAnimal(world);
+      return;
+    }
     switch (world.gameState) {
       case GameStateType.PickTile:
         return pickTile(world, clicked);
@@ -50,7 +61,7 @@ async function handleClick(world: GameWorld, pos: Point) {
       case GameStateType.PlaceAnimal:
         return placeAnimal(world, clicked);
     }
-  else {
+  } else {
     if (world.gameState === GameStateType.PlaceAnimal) setGameStateToPickAnimal(world);
     if (world.gameState === GameStateType.PlaceTile) setGameStateToPickTile(world);
   }

@@ -1,12 +1,18 @@
 import GameWorld from "../components/game-world";
-import { CreateGraphics } from "./hitboxes/create-hitboxes.system";
+import { CreateGraphics as UpdateGraphics } from "./hitboxes/create-hitboxes.system";
 import { RenderPlayerScore } from "./render/score-render.system";
 import { Graphics } from "pixi.js";
 import { PLAYER_BOARD_TOP } from "../consts/sizes";
+import { addControls } from "./render/controls-render.system";
 
 export function DrawBoard(world: GameWorld) {
   renderLayout(world);
-  CreateGraphics(world);
+  UpdateBoard(world);
+  addControls(world);
+}
+
+export function UpdateBoard(world: GameWorld) {
+  UpdateGraphics(world);
   UpdateScore(world);
 }
 
@@ -18,6 +24,5 @@ export function UpdateScore(world: GameWorld) {
 function renderLayout(world: GameWorld) {
   const g = new Graphics();
   g.rect(0, PLAYER_BOARD_TOP, world.windowSize.width, 1).stroke(0);
-  world.layoutGraphics = g;
   world.tileContainer.addChild(g);
 }

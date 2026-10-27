@@ -22,6 +22,7 @@ export function SetupGame(app: Application) {
     animalContainer: new Container(),
     scoreContainer: new Container(),
     tileContainer: new Container(),
+    controlsContiner: new Container(),
     idMngr,
   };
   return world;

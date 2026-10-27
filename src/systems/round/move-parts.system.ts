@@ -5,11 +5,16 @@ import Hitbox from "../../components/hitbox";
 import { GameElementType } from "../../consts/enums/game-element.type";
 import { EdgeTile } from "../../components/edge-tile";
 import { HexTile } from "../../components/hex-tile";
-import { DrawBoard, UpdateScore } from "../draw-board.system";
+import { UpdateBoard, UpdateScore } from "../draw-board.system";
 import { Coords } from "../../components/coords";
 import { PlacedTile } from "../../components/placed-tile";
-import { setGameStateToPlaceTile, setGameStateToPickAnimal, setGameStateToPlaceAnimal } from "./state-management.system";
-import { AddCenterTiles, clearStock } from "./round-shuffler.system";
+import {
+  setGameStateToPlaceTile,
+  setGameStateToPickAnimal,
+  setGameStateToPlaceAnimal,
+  setGameStateToPickTile,
+} from "./state-management.system";
+import { AddCenterTiles, clearStock } from "./stock-shuffler.system";
 
 export function pickTile(world: GameWorld, stockTileHitbox: Hitbox) {
   const stockIndex = world.center.tileStock.findIndex((x) => x.id === stockTileHitbox.renderedOn);
@@ -27,7 +32,7 @@ export async function placeTile(world: GameWorld, edgeHitbox: Hitbox) {
   removeEdge(world, edgeTile, edgeHitbox);
   world.isWaiting = true;
   await moveTileFromStockToBoard(world, pickup.tileIndex, pickup.tile, edgeTile.coords, pickup.tileHitbox);
-  DrawBoard(world);
+  UpdateBoard(world);
   setGameStateToPickAnimal(world);
 }
 
@@ -75,6 +80,7 @@ export async function placeAnimal(world: GameWorld, toPlaceHitbox: Hitbox) {
   const animal = world.center.animalStock[pickup.animalIndex];
 
   world.isWaiting = true;
+  setGameStateToPickTile(world);
   placementTile.occupied = animal.value;
   pickup.animalHitbox!.point = getTilePointOnPlayerBoard(world, placementTile.coords);
   pickup.animalHitbox!.renderedOn = placementTile.id;
@@ -83,8 +89,19 @@ export async function placeAnimal(world: GameWorld, toPlaceHitbox: Hitbox) {
   delete world.center.animalStock[pickup.animalIndex];
   if (placementTile.animals.length === 1) world.player.bonusScore++;
 
-  UpdateScore(world);
+  await endRound(world);
+}
 
+export async function removeAnimal(world: GameWorld) {
+  world.isWaiting = true;
+  const pickup = world.lastPickup!;
+  setGameStateToPickTile(world);
+  await clearStock(world, [], [pickup.animalIndex]);
+  await endRound(world);
+}
+
+async function endRound(world: GameWorld) {
+  UpdateScore(world);
   await AddCenterTiles(world);
   const randomDelete = Math.floor(Math.random() * 4);
   await clearStock(world, [randomDelete], [randomDelete]);

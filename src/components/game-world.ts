@@ -20,8 +20,8 @@ export default interface GameWorld {
   animalContainer: Container;
   tileContainer: Container;
   scoreContainer: Container;
+  controlsContiner: Container;
 
-  layoutGraphics?: Graphics;
   //helpers
   idMngr: IdManager;
 }

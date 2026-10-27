@@ -4,6 +4,8 @@ export enum GameElementType {
   EdgeTile,
   StockAnimal,
   // uninteractive
+  TileControl,
+  AnimalControl,
   BoardAnimal,
   Scoring,
 }

@@ -3,4 +3,5 @@ export enum GameStateType {
   PlaceTile,
   PickAnimal,
   PlaceAnimal,
+  GameOver,
 }
