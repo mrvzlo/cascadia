@@ -16,6 +16,7 @@ import {
 } from "./state-management.system";
 import { AddCenterTiles, clearStock } from "./stock-shuffler.system";
 import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
+import { GameStateType } from "../../consts/enums/game-state.type";
 
 export function pickTile(world: GameWorld, stockTileHitbox: Hitbox) {
   const stockIndex = world.center.tileStock.findIndex((x) => x.id === stockTileHitbox.renderedOn);
@@ -109,4 +110,11 @@ async function endRound(world: GameWorld) {
   const randomDelete = Math.floor(Math.random() * 4);
   await clearStock(world, [randomDelete], [randomDelete]);
   await AddCenterTiles(world);
+  world.round++;
+  if (world.round === 20) await endGame(world);
+}
+
+async function endGame(world: GameWorld) {
+  world.gameState = GameStateType.GameOver;
+  await clearStock(world, [0, 1, 2, 3], [0, 1, 2, 3]);
 }
