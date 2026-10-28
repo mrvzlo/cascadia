@@ -1,20 +1,21 @@
-import PlayerBoard from "../../components/player-board";
 import { PlacedTile } from "../../components/placed-tile";
 import { HexNeighbors } from "../hitboxes/available-move.system";
 import { Coords } from "../../components/coords";
 import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
 import GameWorld from "../../components/game-world";
+import { checkShareEdge } from "./share-edge.system";
+import Map2D from "../../helpers/map2d";
 
 export function setTerrainScore(world: GameWorld) {
   for (let i = 0; i < world.player.terrainScore.length; i++)
-    world.player.terrainScore[i] = getMaxRegionSize(world.player, world.animalSetup[i]);
+    world.player.terrainScore[i] = getMaxRegionSize(world.player.tiles, world.animalSetup[i]);
 }
 
-function getMaxRegionSize(board: PlayerBoard, type: TilePairType) {
+function getMaxRegionSize(tiles: Map2D<PlacedTile>, type: TilePairType) {
   const visited = new Set<string>();
   let maxRegionSize = 0;
 
-  for (const tile of board.tiles.getAll()) {
+  for (const tile of tiles.getAll()) {
     const startKey = getPointKey(tile.coords);
     if (!hasBiome(tile, type) || visited.has(startKey)) continue;
 
@@ -31,13 +32,8 @@ function getMaxRegionSize(board: PlayerBoard, type: TilePairType) {
         const neighborKey = getPointKey(neighborPoint);
         if (visited.has(neighborKey)) continue;
 
-        const neighbor = board.tiles.get(neighborPoint);
-        if (
-          !neighbor ||
-          !hasBiomeOnEdge(current, type, getSharedEdge(direction)) ||
-          !hasBiomeOnEdge(neighbor, type, (getSharedEdge(direction) + 3) % 6)
-        )
-          continue;
+        const neighbor = tiles.get(neighborPoint);
+        if (!neighbor || !checkShareEdge(current, neighbor, type, direction)) continue;
 
         visited.add(neighborKey);
         queue.push(neighbor);
@@ -52,26 +48,6 @@ function getMaxRegionSize(board: PlayerBoard, type: TilePairType) {
 
 function hasBiome(tile: PlacedTile, color: number) {
   return tile.bioms.includes(color);
-}
-
-function hasBiomeOnEdge(tile: PlacedTile, color: number, edge: number) {
-  if (tile.bioms.length === 1) return tile.bioms[0] === color;
-  if (tile.bioms.length < 2) return false;
-
-  const rotation = (tile.rotation ?? 0) % 6;
-  const unrotatedEdge = (edge - rotation + 6) % 6;
-  const biomeIndex = unrotatedEdge < 3 ? 0 : 1;
-  return tile.bioms[biomeIndex] === color;
-}
-
-function getSharedEdge(direction: Coords) {
-  if (direction.intX === 1 && direction.intY === 1) return 0;
-  if (direction.intX === 2) return 1;
-  if (direction.intX === 1 && direction.intY === -1) return 2;
-  if (direction.intX === -1 && direction.intY === -1) return 3;
-  if (direction.intX === -2) return 4;
-  if (direction.intX === -1 && direction.intY === 1) return 5;
-  throw new Error(`Unsupported hex neighbor offset (${direction.intX}, ${direction.intY})`);
 }
 
 function getPointKey(point: Coords) {

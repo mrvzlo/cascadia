@@ -4,7 +4,7 @@ import Hitbox from "../components/hitbox";
 import { SQRT3 } from "../consts/sizes";
 import { GameStateType } from "../consts/enums/game-state.type";
 import { animateTileRotate } from "../systems/animations/tile-animation.system";
-import { DrawBoard } from "../systems/draw-board.system";
+import { DrawBoard, UpdateScore } from "../systems/draw-board.system";
 import { GameElementType } from "../consts/enums/game-element.type";
 import { pickAnimal, pickTile, placeAnimal, placeTile, removeAnimal } from "../systems/round/move-parts.system";
 import { checkElementActiveState, setGameStateToPickAnimal, setGameStateToPickTile } from "../systems/round/state-management.system";
@@ -33,8 +33,16 @@ export function setupClickHandling(app: Application, world: GameWorld) {
 async function rotateActiveTile(world: GameWorld, left: boolean) {
   if (!world.lastPickup) return;
   const pickup = world.lastPickup!;
-  pickup.tile.rotation = ((pickup.tile.rotation ?? 0) + (left ? 1 : 5)) % 6;
-  await animateTileRotate(pickup.tileHitbox, pickup.tile.rotation);
+  if (world.gameState === GameStateType.PlaceTile) {
+    pickup.tile.rotation = ((pickup.tile.rotation ?? 0) + (left ? 1 : 5)) % 6;
+    await animateTileRotate(pickup.tileHitbox, pickup.tile.rotation);
+  }
+  if (world.gameState === GameStateType.PickAnimal) {
+    const placed = world.player.tiles.getAll().find((x) => x.id === pickup.tileHitbox.renderedOn);
+    placed!.rotation = ((placed!.rotation ?? 0) + (left ? 1 : 5)) % 6;
+    await animateTileRotate(pickup.tileHitbox, placed!.rotation);
+  }
+  UpdateScore(world);
 }
 
 async function handleClick(world: GameWorld, pos: Point) {
