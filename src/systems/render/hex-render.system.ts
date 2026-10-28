@@ -4,6 +4,7 @@ import { HEX_SIZE } from "../../consts/sizes";
 import { PlacedTile } from "../../components/placed-tile";
 import { drawAnimalsOnTile } from "./animal-render.system";
 import { terrainPatterns } from "./textures";
+import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
 
 const sins = [0, Math.sin(Math.PI / 3), Math.sin((2 * Math.PI) / 3), 0, Math.sin((4 * Math.PI) / 3), Math.sin((5 * Math.PI) / 3)];
 const coss = [1, Math.cos(Math.PI / 3), Math.cos((2 * Math.PI) / 3), -1, Math.cos((4 * Math.PI) / 3), Math.cos((5 * Math.PI) / 3)];
@@ -21,7 +22,7 @@ export function drawCenterHex(tile: HexTile, offset: PointData): Graphics {
 export function drawPlayerHex(tile: PlacedTile, offset: PointData): Graphics {
   const g = new Graphics();
   drawHex(g, tile.bioms);
-  const isOccupied = tile.occupied !== undefined;
+  const isOccupied = tile.occupied !== TilePairType.Empty;
   drawAnimalsOnTile(g, isOccupied ? [tile.occupied!] : tile.animals, isOccupied);
   g.position = offset;
   g.rotation = rotationToDeg(tile.rotation);
@@ -32,7 +33,7 @@ export const rotationToDeg = (x?: number) => (Math.PI / 3) * -(x ?? 0);
 
 export function drawEmptyHex(offset: PointData): Graphics {
   const g = new Graphics();
-  drawHex(g, [5], false);
+  drawHex(g, [0], false);
   g.position = offset;
   g.alpha = 0.4;
   g.scale.set(0.5);

@@ -1,53 +1,46 @@
 import { PlacedTile } from "../../components/placed-tile";
+import PlayerBoard from "../../components/player-board";
+import { ScoringRule } from "../../components/scoring-rule";
+import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
 import Map2D from "../../helpers/map2d";
 import { getNear } from "../hitboxes/available-move.system";
+import { getFromProgression, getSameGroupSizes } from "./base-scoring.system";
 
-export function scoreBeardA(board: Map2D<PlacedTile>, bearId: number) {
-  const sizes = getBearGroupSize(board, bearId);
-  switch (sizes[2]) {
-    case 0:
-      return 0;
-    case 1:
-      return 4;
-    case 2:
-      return 11;
-    case 3:
-      return 19;
-    default:
-      return 27;
-  }
+export const getBearSubType = (subType: number): ScoringRule => {
+  const scoring = [scoreFamiliesOf2, scoreFamiliesOf3, scoreFamilies1to3, scoreFamilies2to4, scoreLonelyOnEdge];
+  return (board: PlayerBoard) => scoring[subType](board.tiles);
+};
+
+export function scoreFamiliesOf2(board: Map2D<PlacedTile>) {
+  const sizes = getSameGroupSizes(board, TilePairType.BearForest);
+  return getFromProgression([0, 4, 11, 19, 27], sizes[2]);
 }
 
-export function scoreBeardC(board: Map2D<PlacedTile>, bearId: number) {
-  const sizes = getBearGroupSize(board, bearId);
+export function scoreFamilies1to3(board: Map2D<PlacedTile>) {
+  const sizes = getSameGroupSizes(board, TilePairType.BearForest);
   const all3 = sizes[1] > 0 && sizes[2] > 0 && sizes[3] > 0;
   return sizes[1] * 2 + sizes[2] * 5 + sizes[3] * 8 + (all3 ? 3 : 0);
 }
 
-export function scoreBeardB(board: Map2D<PlacedTile>, bearId: number) {
-  const sizes = getBearGroupSize(board, bearId);
+export function scoreFamiliesOf3(board: Map2D<PlacedTile>) {
+  const sizes = getSameGroupSizes(board, TilePairType.BearForest);
   return sizes[3] * 10;
 }
 
-export function scoreBeardD(board: Map2D<PlacedTile>, bearId: number) {
-  const sizes = getBearGroupSize(board, bearId);
+export function scoreFamilies2to4(board: Map2D<PlacedTile>) {
+  const sizes = getSameGroupSizes(board, TilePairType.BearForest);
   return sizes[4] * 13 + sizes[2] * 5 + sizes[3] * 8;
 }
 
-function getBearGroupSize(board: Map2D<PlacedTile>, bearId: number) {
-  const bears = board.getAll().filter((x) => x.occupied === bearId);
-  const visited = new Set<string>();
-  const sizes = [0, 0, 0, 0, 0];
-
-  let sum = 0;
-  bears.forEach((c) => {
-    if (visited.has(c.id)) return;
-    visited.add(c.id);
-
-    const near = getNear(c.coords)
-      .map((x) => board.get(x))
-      .filter((x) => !!x && x.occupied === bearId);
-    sum += near.length;
+export function scoreLonelyOnEdge(board: Map2D<PlacedTile>) {
+  const bears = board.getAll().filter((x) => x.occupied === TilePairType.BearForest);
+  let count = 0;
+  bears.forEach((x) => {
+    const near = getNear(x.coords).map((p) => board.get(p));
+    const isNotLonely = near.some((x) => x && x.occupied === TilePairType.BearForest);
+    if (isNotLonely) return;
+    const hasEmptySpace = near.some((x) => !x || x.occupied === TilePairType.Empty);
+    if (hasEmptySpace) count++;
   });
-  return sizes;
+  return count * 3;
 }

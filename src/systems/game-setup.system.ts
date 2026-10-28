@@ -8,12 +8,20 @@ import { shuffle } from "./generic/shuffle.system";
 import Map2D from "../helpers/map2d";
 import { GameStateType } from "../consts/enums/game-state.type";
 import { IdManager } from "../helpers/id-manager";
+import { TilePairType } from "../consts/enums/animal-tile-pair.type";
 
 export function SetupGame(app: Application) {
   const idMngr = new IdManager();
+  const animalSetup = [
+    TilePairType.BearForest,
+    TilePairType.BirdMountain,
+    TilePairType.ElkStepe,
+    TilePairType.FishSea,
+    TilePairType.FoxLawn,
+  ];
   const world: GameWorld = {
-    center: setupGameBoard(idMngr),
-    player: setupPlayerBoard(idMngr),
+    center: setupGameBoard(animalSetup, idMngr),
+    player: setupPlayerBoard(animalSetup, idMngr),
     round: 0,
     hitboxes: new Map(),
     gameState: GameStateType.PickTile,
@@ -23,40 +31,41 @@ export function SetupGame(app: Application) {
     scoreContainer: new Container(),
     tileContainer: new Container(),
     controlsContiner: new Container(),
+    animalSetup,
     idMngr,
   };
   return world;
 }
 
-const setupGameBoard = (idMngr: IdManager): CenterBoard => ({
+const setupGameBoard = (animalSetup: TilePairType[], idMngr: IdManager): CenterBoard => ({
   discarded: [],
   tileStock: [],
   animalStock: [],
-  animalShuffled: shuffle(getAllAnimals()),
-  tileShuffled: shuffle(getAllTiles(idMngr)),
+  animalShuffled: shuffle(getAllAnimals(animalSetup)),
+  tileShuffled: shuffle(getAllTiles(animalSetup, idMngr)),
 });
 
-const setupPlayerBoard = (idMngr: IdManager): PlayerBoard => ({
+const setupPlayerBoard = (animalSetup: TilePairType[], idMngr: IdManager): PlayerBoard => ({
   score: 0,
   animalScore: [0, 0, 0, 0, 0],
   terrainScore: [0, 0, 0, 0, 0],
-  tiles: getStartingTiles(idMngr),
+  tiles: getStartingTiles(animalSetup, idMngr),
   edges: new Map2D(),
   bonusScore: 0,
 });
 
-function getAllAnimals() {
-  const tiles: number[] = [];
-  for (let i = 0; i < 50; i++) tiles.push(i % 5);
+function getAllAnimals(animalSetup: TilePairType[]) {
+  const tiles: TilePairType[] = [];
+  for (let i = 0; i < 50; i++) tiles.push(animalSetup[i % 5]);
   return tiles;
 }
 
-function getAllTiles(idMngr: IdManager) {
+function getAllTiles(animalSetup: TilePairType[], idMngr: IdManager) {
   const tiles: HexTile[] = [];
   for (let i = 0; i < 5; i++) {
-    tiles.push({ bioms: [i], id: idMngr.getNext("T"), animals: [i] });
-    tiles.push({ bioms: [i], id: idMngr.getNext("T"), animals: [i] });
-    tiles.push({ bioms: [i], id: idMngr.getNext("T"), animals: [(i + 3) % 5] });
+    tiles.push({ bioms: [animalSetup[i]], id: idMngr.getNext("T"), animals: [animalSetup[i]] });
+    tiles.push({ bioms: [animalSetup[i]], id: idMngr.getNext("T"), animals: [animalSetup[(i + 1) % 5]] });
+    tiles.push({ bioms: [animalSetup[i]], id: idMngr.getNext("T"), animals: [animalSetup[(i + 2) % 5]] });
   } // 15
 
   let a = 0;
@@ -64,26 +73,29 @@ function getAllTiles(idMngr: IdManager) {
   const animalTrios: number[][] = [];
   for (let i = 0; i < 5; i++)
     for (let j = 0; j < i; j++) {
-      animalPairs.push([i, j]);
-      for (let k = 0; k < j; k++) animalTrios.push([i, j, k]);
+      animalPairs.push([animalSetup[i], animalSetup[j]]);
+      for (let k = 0; k < j; k++) animalTrios.push([animalSetup[i], animalSetup[j], animalSetup[k]]);
     }
 
   shuffle(animalPairs);
   for (let i = 0; i < 5; i++)
-    for (let j = 0; j < i; j++) tiles.push({ bioms: [i, j], id: idMngr.getNext("T"), animals: animalPairs[a++ % 10] }); // 25
+    for (let j = 0; j < i; j++)
+      tiles.push({ bioms: [animalSetup[i], animalSetup[j]], id: idMngr.getNext("T"), animals: animalPairs[a++ % 10] }); // 25
   shuffle(animalPairs);
   for (let i = 0; i < 5; i++)
-    for (let j = 0; j < i; j++) tiles.push({ bioms: [i, j], id: idMngr.getNext("T"), animals: animalPairs[a++ % 10] }); // 35
+    for (let j = 0; j < i; j++)
+      tiles.push({ bioms: [animalSetup[i], animalSetup[j]], id: idMngr.getNext("T"), animals: animalPairs[a++ % 10] }); // 35
   shuffle(animalTrios);
   for (let i = 0; i < 5; i++)
-    for (let j = 0; j < i; j++) tiles.push({ bioms: [i, j], id: idMngr.getNext("T"), animals: animalTrios[a++ % 10] }); // 45
+    for (let j = 0; j < i; j++)
+      tiles.push({ bioms: [animalSetup[i], animalSetup[j]], id: idMngr.getNext("T"), animals: animalTrios[a++ % 10] }); // 45
 
   return tiles;
 }
 
-function getStartingTiles(idMngr: IdManager) {
-  const terrains = [0, 1, 2, 3, 4];
-  const animals = [0, 1, 2, 3, 4];
+function getStartingTiles(typesSetup: TilePairType[], idMngr: IdManager) {
+  const terrains = [...typesSetup];
+  const animals = [...typesSetup];
   shuffle(terrains);
   shuffle(animals);
   const top: PlacedTile = {
@@ -92,6 +104,7 @@ function getStartingTiles(idMngr: IdManager) {
     rotation: 0,
     coords: { intX: 0, intY: 0 },
     bioms: [terrains[0]],
+    occupied: TilePairType.Empty,
   };
   const left: PlacedTile = {
     animals: [animals[2], animals[1]],
@@ -99,6 +112,7 @@ function getStartingTiles(idMngr: IdManager) {
     rotation: 2,
     coords: { intX: -1, intY: 1 },
     bioms: [terrains[2], terrains[3]],
+    occupied: TilePairType.Empty,
   };
   const right: PlacedTile = {
     animals: [animals[0], animals[3], animals[4]],
@@ -106,6 +120,7 @@ function getStartingTiles(idMngr: IdManager) {
     rotation: 1,
     coords: { intX: 1, intY: 1 },
     bioms: [terrains[4], terrains[1]],
+    occupied: TilePairType.Empty,
   };
   const map = new Map2D<PlacedTile>();
   map.set(top.coords, top);

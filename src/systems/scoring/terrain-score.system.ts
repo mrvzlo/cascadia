@@ -2,18 +2,21 @@ import PlayerBoard from "../../components/player-board";
 import { PlacedTile } from "../../components/placed-tile";
 import { HexNeighbors } from "../hitboxes/available-move.system";
 import { Coords } from "../../components/coords";
+import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
+import GameWorld from "../../components/game-world";
 
-export function setTerrainScore(player: PlayerBoard) {
-  for (let i = 0; i < player.terrainScore.length; i++) player.terrainScore[i] = getMaxRegionSize(player, i);
+export function setTerrainScore(world: GameWorld) {
+  for (let i = 0; i < world.player.terrainScore.length; i++)
+    world.player.terrainScore[i] = getMaxRegionSize(world.player, world.animalSetup[i]);
 }
 
-function getMaxRegionSize(board: PlayerBoard, color: number) {
+function getMaxRegionSize(board: PlayerBoard, type: TilePairType) {
   const visited = new Set<string>();
   let maxRegionSize = 0;
 
   for (const tile of board.tiles.getAll()) {
     const startKey = getPointKey(tile.coords);
-    if (!hasBiome(tile, color) || visited.has(startKey)) continue;
+    if (!hasBiome(tile, type) || visited.has(startKey)) continue;
 
     const queue = [tile];
     visited.add(startKey);
@@ -31,8 +34,8 @@ function getMaxRegionSize(board: PlayerBoard, color: number) {
         const neighbor = board.tiles.get(neighborPoint);
         if (
           !neighbor ||
-          !hasBiomeOnEdge(current, color, getSharedEdge(direction)) ||
-          !hasBiomeOnEdge(neighbor, color, (getSharedEdge(direction) + 3) % 6)
+          !hasBiomeOnEdge(current, type, getSharedEdge(direction)) ||
+          !hasBiomeOnEdge(neighbor, type, (getSharedEdge(direction) + 3) % 6)
         )
           continue;
 

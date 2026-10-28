@@ -15,6 +15,7 @@ import {
   setGameStateToPickTile,
 } from "./state-management.system";
 import { AddCenterTiles, clearStock } from "./stock-shuffler.system";
+import { TilePairType } from "../../consts/enums/animal-tile-pair.type";
 
 export function pickTile(world: GameWorld, stockTileHitbox: Hitbox) {
   const stockIndex = world.center.tileStock.findIndex((x) => x.id === stockTileHitbox.renderedOn);
@@ -44,7 +45,7 @@ function removeEdge(world: GameWorld, edgeTile: EdgeTile, edgeHitbox: Hitbox) {
 
 async function moveTileFromStockToBoard(world: GameWorld, index: number, tile: HexTile, coords: Coords, hitbox: Hitbox) {
   const newTileId = world.idMngr.getNext("P");
-  world.player.tiles.set(coords, { ...tile, id: newTileId, hitboxId: hitbox.id, coords });
+  world.player.tiles.set(coords, { ...tile, id: newTileId, hitboxId: hitbox.id, coords, occupied: TilePairType.Empty });
   hitbox.renderedOn = newTileId;
   hitbox.renderedType = GameElementType.BoardTile;
   hitbox.point = getTilePointOnPlayerBoard(world, coords);
@@ -78,6 +79,7 @@ export async function placeAnimal(world: GameWorld, toPlaceHitbox: Hitbox) {
   const placementTile = world.player.tiles.getAll().find((x) => x.id === toPlaceHitbox.renderedOn)!;
   const pickup = world.lastPickup!;
   const animal = world.center.animalStock[pickup.animalIndex];
+  if (!placementTile.animals.includes(animal.value)) return false;
 
   world.isWaiting = true;
   setGameStateToPickTile(world);
@@ -90,6 +92,7 @@ export async function placeAnimal(world: GameWorld, toPlaceHitbox: Hitbox) {
   if (placementTile.animals.length === 1) world.player.bonusScore++;
 
   await endRound(world);
+  return true;
 }
 
 export async function removeAnimal(world: GameWorld) {

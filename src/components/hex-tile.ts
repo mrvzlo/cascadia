@@ -1,6 +1,8 @@
+import { TilePairType } from "../consts/enums/animal-tile-pair.type";
+
 export interface HexTile {
-  animals: number[];
-  bioms: number[];
+  animals: TilePairType[];
+  bioms: TilePairType[];
   rotation?: number;
 
   id: string;
